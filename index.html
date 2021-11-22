@@ -87,21 +87,197 @@
     </section>
   </main>
 
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
   <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "f44fefb189a4460190320b28f1b0b88f",
+      application: "lab-9"
+    });
+  </script>
+
+  <script>
+    class DivideByZeroError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = "DivideByZeroError";
+      }
+    }
+
+    class EmptyElementError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = "EmptyElementError";
+      }
+    }
+
+    window.onerror = function (msg, url, lineNo, columnNo, error) {
+      var message = [
+        'Message: ' + msg,
+        'URL: ' + url,
+        'Line: ' + lineNo,
+        'Column: ' + columnNo,
+        'Error object: ' + JSON.stringify(error)
+      ].join(' - ');
+
+      console.log(message);
+
+      return true;
+    };
+
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
-      e.preventDefault();
-      let output = document.querySelector('output');
-      let firstNum = document.querySelector('#first-num').value;
-      let secondNum = document.querySelector('#second-num').value;
-      let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+        e.preventDefault();
+        let output = document.querySelector('output');
+        let firstNum = document.querySelector('#first-num').value;
+        let secondNum = document.querySelector('#second-num').value;
+        let operator = document.querySelector('#operator').value;
+        let result = ''
+        try {
+          result = evaluate (firstNum, operator, secondNum);
+        }
+        catch (e) {
+          console.error(e)
+          result = 'Error';
+        }
+        finally {
+          output.innerHTML = result;
+        }
     });
+
+    function evaluate(firstNum, operator, secondNum) {
+      if (firstNum === '' || secondNum === '') {
+        throw new EmptyElementError('Missing number');
+      }
+
+      if (operator === '/' && secondNum === '0') {
+        throw new DivideByZeroError('Cannot divide by zero');
+        return;
+      }
+      return eval(`${firstNum} ${operator} ${secondNum}`);
+    }
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
     // Start your code here
     // You may move this JS to another file if you wish
+
+    for (let i = 0; i < errorBtns.length; i++) {
+      errorBtns[i].addEventListener('click', e => {
+        switch (e.target.innerHTML) {
+          case 'Console Log':
+            consoleLog();
+            break;
+          case 'Console Error':
+            consoleError();
+            break;
+          case 'Console Count':
+            consoleCount();
+            break;
+          case 'Console Warn':
+            consoleWarn();
+            break;
+          case 'Console Assert':
+            consoleAssert();
+            break;
+          case 'Console Clear':
+            consoleClear();
+            break;
+          case 'Console Dir':
+            consoleDir();
+            break;
+          case 'Console dirxml':
+            consoleDirxml();
+            break;
+          case 'Console Group Start':
+            consoleGroupStart();
+            break;
+          case 'Console Group End':
+            consoleGroupEnd();
+            break;
+          case 'Console Table':
+            consoleTable();
+            break;
+          case 'Start Timer':
+            startTimer();
+            break;
+          case 'End Timer':
+            endTimer();
+            break;
+          case 'Console Trace':
+            deep();
+            break;
+          case 'Trigger a Global Error':
+            triggerGlobalError();
+            break;
+        }
+      });
+    }
+
+    function consoleLog() {
+      console.log('Console Log Demo');
+    }
+
+    function consoleError() {
+      console.error('Console Error Demo');
+    }
+
+    function consoleCount() {
+      console.count('Console Button');
+    }
+    
+    function consoleWarn() {
+      console.warn('Console Warn Button');
+    }
+
+    function consoleAssert() {
+      const number = 2;
+      const errorMsg = 'The number does not equal 3';
+      console.assert(number === 3, { number, errorMsg });
+    }
+
+    function consoleClear() {
+      console.clear();
+    }
+
+    function consoleDir() {
+      console.dir(document.querySelector('#error-btns button'));
+    }
+
+    function consoleDirxml() {
+      console.dirxml(document.querySelector('#error-btns button'));
+    }
+
+    function consoleGroupStart() {
+      console.group('console.group');
+    }
+
+    function consoleGroupEnd() {
+      console.groupEnd();
+    }
+
+    function consoleTable() {
+      let classes = [['Software Engineering', '110'], 
+                    ['Programming Languages', '130'], 
+                    ['Advanced Software Development', '112']];
+      console.table(classes);
+    }
+
+    function startTimer() {
+      console.time('Timer Button');
+    }
+
+    function endTimer() {
+      console.timeEnd('Timer Button');
+    }
+
+    const deep = () => { deeper(); };
+    const deeper = () => { deepest(); };
+    const deepest = () => { console.trace(); };    
+
+    function triggerGlobalError() {
+      return boom;
+    }
+
   </script>
 </body>
 
